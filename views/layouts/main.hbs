@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>Node.js app</title>
+</head>
+<body>
+    <p class="project-desc">Node.js app para Coderhouse - Tercera entrega</p>
+    <nav>
+        {{#if this.name}}
+            <div class="welcome">
+                <img class="user-img" src="{{this.photo}}" alt="User img">
+                <p>Bienvenido, {{this.name}}</p>
+            </div>
+        {{/if}}
+        <ul>
+            {{#unless this.name}}
+                <li><a href="/register">Registrarme</a></li>
+                <li><a href="/login">Iniciar sesión</a></li>
+            {{/unless}}
+            {{#if this.name}}
+                <li><a href="/">Productos</a></li>
+                <li><a href="/cart">Carrito</a></li>
+                <li><a href="/logout">Cerrar sesión</a></li>
+            {{/if}}
+        </ul>
+    </nav>
+    {{{body}}}
+</body>
+</html>

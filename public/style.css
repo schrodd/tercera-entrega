@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600;800&display=swap');
+
+* {
+  font-family: Inter, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none; 
+}
+
+:root {
+  --shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  --grey: rgb(50,50,50);
+  --lgrey: rgb(200, 200, 200);
+  --radius: 8px;
+  --radius2: 5px;
+}
+
+html {
+  background-color: rgb(50,50,50);
+}
+
+a {
+  color: inherit
+}
+
+body {
+  margin: 20px 10%;
+  padding: 30px;
+  background-color: ghostwhite;
+  border-radius: var(--radius);
+  color: var(--grey);
+  position: relative;
+}
+
+h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+
+.project-desc {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.user-img {
+  width: 40px;
+  border-radius: 100%;
+  box-shadow: var(--shadow);
+  margin-right: 10px;
+}
+
+.welcome {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.welcome p {
+  font-weight: 600;
+}
+
+nav ul {
+  display: flex;
+  gap: 10px;
+}
+
+nav ul li { 
+  font-size: 14px;
+}
+
+nav ul li:hover {
+  font-weight: 600;
+}
+
+nav {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--lgrey);
+  margin-bottom: 20px;
+}
+
+form h2 {
+  margin-bottom: 10px;
+}
+
+input {
+  border: 1px solid var(--lgrey);
+  padding: 5px 8px;
+  box-shadow: var(--shadow);
+  border-radius: var(--radius2);
+}
+
+button {
+  border: 1px solid var(--lgrey);
+  padding: 5px 8px;
+  box-shadow: var(--shadow);
+  border-radius: var(--radius2);
+  cursor: pointer;
+}
+
+button:hover {
+  font-weight: 600;
+}
+
+form.register {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+form.register input {
+  flex: 1
+}
+
+form.register h2, form.register button {
+  width: 100%;
+}
