@@ -6,7 +6,7 @@ const productSchema = new mongoose.Schema({
         type: String,
         isRequired: true,
     },
-    sku: {
+    image: {
         type: String,
         isRequired: true,
     },

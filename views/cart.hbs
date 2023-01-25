@@ -1,1 +1,20 @@
-<h2>Cart</h2>
+<h2>Carrito</h2>
+<div class="product-container">
+    <div class="item">
+        <h3>Imagen</h3>
+        <h3>Nombre</h3>
+        <h3>Cantidad</h3>
+        <h3>Precio</h3>
+        <h3>Eliminar</h3>
+    </div>
+    {{#each prodsInCart}}
+        <div class="item">
+            <div><img src="{{this.image}}" alt="product"></div>
+            <div><p>{{this.name}}</p></div>
+            <div><p>{{this.qty}}</p></div>
+            <div><p>AR$ {{this.price}}</p></div>
+            <div><a href="/remove-from-cart/{{this._id}}">Eliminar <br>del carrito</a></div>
+        </div>
+    {{/each}}
+    <a href="/place-order"><button>Finalizar orden</button></a>
+</div>

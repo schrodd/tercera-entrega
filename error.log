@@ -4,3 +4,15 @@
 {"level":"error","message":"User not found with username asd"}
 {"level":"error","message":null}
 {"level":"error","message":"User not found with username andres_alejandro_rodriguez@hotmail.com"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"kind":"string","message":"Cast to string failed for value \"{ id: '63cdcecb9e25d9d32ed5eb0d', qty: 1 }\" (type Object) at path \"cart\"","name":"CastError","path":"cart","reason":null,"stringValue":"\"{ id: '63cdcecb9e25d9d32ed5eb0d', qty: 1 }\"","value":{"id":"63cdcecb9e25d9d32ed5eb0d","qty":1},"valueType":"Object"}
+{"level":"error"}
+{"level":"error","message":null}
+{"level":"error","originalStack":"Error\n    at model.Query._wrappedThunk [as _updateOne] (C:\\Users\\Andres\\Desktop\\Coderhouse\\tercera-entrega\\node_modules\\mongoose\\lib\\helpers\\query\\wrapThunk.js:27:28)\n    at C:\\Users\\Andres\\Desktop\\Coderhouse\\tercera-entrega\\node_modules\\kareem\\index.js:497:25\n    at processTicksAndRejections (node:internal/process/task_queues:78:11)"}
+{"level":"error","originalStack":"Error\n    at model.Query._wrappedThunk [as _updateOne] (C:\\Users\\Andres\\Desktop\\Coderhouse\\tercera-entrega\\node_modules\\mongoose\\lib\\helpers\\query\\wrapThunk.js:27:28)\n    at C:\\Users\\Andres\\Desktop\\Coderhouse\\tercera-entrega\\node_modules\\kareem\\index.js:497:25\n    at processTicksAndRejections (node:internal/process/task_queues:78:11)"}

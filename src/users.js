@@ -27,7 +27,8 @@ const userSchema = new mongoose.Schema({
     },
     photo: {
         type: String,
-    }
+    },
+    cart: [{ type: Object }]
 });
 
 const UserModel = mongoose.model(userCollection, userSchema);

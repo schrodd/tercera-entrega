@@ -1,1 +1,17 @@
-<h2>Products</h2>
+<h2>Productos</h2>
+<div class="product-container">
+    <div class="item">
+        <h3>Imagen</h3>
+        <h3>Nombre</h3>
+        <h3>Precio</h3>
+        <h3>Agregar</h3>
+    </div>
+    {{#each productsParsed}}
+        <div class="item">
+            <div><img src="{{this.image}}" alt="product"></div>
+            <div><p>{{this.name}}</p></div>
+            <div><p>AR$ {{this.price}}</p></div>
+            <div><a href="/add-to-cart/{{this._id}}">Sumar <br>al carrito</a></div>
+        </div>
+    {{/each}}
+</div>

@@ -118,3 +118,49 @@ form.register input {
 form.register h2, form.register button {
   width: 100%;
 }
+
+.product-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+}
+
+.product-container .item {
+  width: 65%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: white;
+  padding: 10px 20px;
+  margin: 5px 0;
+  box-shadow: var(--shadow);
+  border-radius: var(--radius2);
+}
+
+.product-container button {
+  background: var(--grey);
+  color: white;
+  border: none;
+  margin-top: 5px;
+  padding: 8px 15px;
+}
+
+.item div, .item h3 {
+  width: 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-container .item img {
+  max-width: 50px;
+}
+
+.item a {
+  text-align: center;
+}
+
+.item a:hover {
+  font-weight: 600;
+}
