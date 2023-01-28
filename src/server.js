@@ -346,11 +346,13 @@ app.get('/place-order', passIfLogged, async (req, res) => {
             logger.error(error)
         }
         // Send notification to admin via whatsapp
+        // -pending-
         // Send notification to user via SMS
-        // Redirect to template informing what happened
+        // -pending-
     } catch (err) {
         logger.error(err)
     }
+    // Redirect to template informing what happened
     const data = {
         username: req.user.name,
         photo: req.user.photo,
