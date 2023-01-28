@@ -12,6 +12,7 @@ import Product from './products.js'
 import Order from './orders.js'
 import winston from 'winston'
 import bcrypt from 'bcrypt'
+import {createTransport} from 'nodemailer'
 
 // init app
 const app = express()
@@ -20,6 +21,21 @@ const app = express()
 const port = 8080
 const mongoUrl = 'mongodb+srv://andres:coder@sessionmongoatlas.egjegti.mongodb.net/sessionMongoAtlas?retryWrites=true&w=majority'
 const saltRounds = 10
+const email = 'ranciovichardo@gmail.com'
+const emailPass = 'pigbufzhbkmpftbb'
+const emailTransporter = createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    auth: {
+        user: email,
+        pass: emailPass
+    },
+    // Propiedades adicionales para Postman, pasar a true en produccion
+    /* secure: false,
+    tls: {
+        rejectUnauthorized: false
+    } */
+})
 
 // functions
 function passIfLogged(req, res, next) {
@@ -145,9 +161,29 @@ passport.use('signup', new LocalStrategy(
                         photo: req.body.photo,
                         cart: []
                     }
-                    User.create(newUser, (e, userCreated) => {
-                        err && logger.error(err)
-                        return done(null, userCreated) // returns new user
+                    User.create(newUser, async (err, userCreated) => {
+                        if (err) {
+                            logger.error(err)
+                            return done(err)
+                        } else {
+                            // send notification to user via email
+                            const emailBody = `¡Hola Administrador!
+                            ${userCreated.name} se ha creado una cuenta en el sitio web.
+                            Su usuario es ${userCreated.username}.`
+                            const emailOptions = {
+                                from: 'Server de NodeJS' ,
+                                to: email,
+                                subject: 'Se ha creado una cuenta',
+                                html: emailBody,
+                            }
+                            try {
+                                await emailTransporter.sendMail(emailOptions)
+                            } catch (error) {
+                                logger.error(error)
+                            }
+                            // returns new user
+                            return done(null, userCreated) 
+                        }
                     })
                 });                
                 
@@ -280,7 +316,12 @@ app.get('/remove-from-cart/:id', passIfLogged, (req, res) => {
 })
 
 app.get('/removed-from-cart', passIfLogged, (req, res) => {
-    res.render('removed-from-cart')
+    const data = {
+        username: req.user.name,
+        photo: req.user.photo,
+        cartLength: req.user.cart.length
+    }
+    res.render('removed-from-cart', data)
 })
 
 app.get('/place-order', passIfLogged, async (req, res) => {
@@ -290,7 +331,21 @@ app.get('/place-order', passIfLogged, async (req, res) => {
         await doc.save()
         // Clear cart
         User.updateOne({_id: req.user.id}, {cart: []}, e => e && logger.error(e))
-        // Send notification to admin via mail and whatsapp
+        // Send notification to admin via mail
+        const emailBody = `¡Hola Administrador!
+        Ha ingresado un nuevo pedido de ${req.user.name} (${req.user.username}).`
+        const emailOptions = {
+            from: 'Server de NodeJS' ,
+            to: email,
+            subject: 'Nuevo pedido',
+            html: emailBody,
+        }
+        try {
+            await emailTransporter.sendMail(emailOptions)
+        } catch (error) {
+            logger.error(error)
+        }
+        // Send notification to admin via whatsapp
         // Send notification to user via SMS
         // Redirect to template informing what happened
     } catch (err) {
