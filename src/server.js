@@ -34,9 +34,9 @@ const {
     TWILIO_NUMBER,
     TWILIO_WSP_SENDER,
     TWILIO_WSP_ADMIN,
-    MODE
+    MODE,
+    PORT
 } = process.env
-const port = 8080
 const saltRounds = 10
 const emailTransporter = createTransport({
     host: 'smtp.gmail.com',
@@ -73,8 +73,8 @@ if (cluster.isPrimary && MODE == 'CLUSTER') {
     })
 } else {
     // start server
-    app.listen(port, () => {
-        logger.info('Server listening on port ' + port)
+    app.listen(PORT, () => {
+        logger.info('Server listening on port ' + PORT)
     })
 }
 
