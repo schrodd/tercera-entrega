@@ -146,6 +146,7 @@ app.use(session({
 // configure passport
 app.use(passport.initialize()) // passport - express
 app.use(passport.session()) // passport - session
+// create req.user (serialization)
 passport.serializeUser((user, done) => {
     done(null, user._id);
 });
