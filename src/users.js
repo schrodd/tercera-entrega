@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
         type: Number,
     },
     phone: {
-        type: Number,
+        type: String,
     },
     photo: {
         type: String,

@@ -13,29 +13,73 @@ import Order from './orders.js'
 import winston from 'winston'
 import bcrypt from 'bcrypt'
 import {createTransport} from 'nodemailer'
+import twilio from 'twilio'
+import dotenv from 'dotenv'
+import cluster from 'cluster'
+import os from 'os'
+
+dotenv.config()
 
 // init app
 const app = express()
 
 // constants
+const availableCpus = os.cpus().length
+const {
+    MONGODB_URL, 
+    NODEMAILER_EMAIL, 
+    NODEMAILER_PASSWORD, 
+    TWILIO_SID, 
+    TWILIO_AUTHTOKEN,
+    TWILIO_NUMBER,
+    TWILIO_WSP_SENDER,
+    TWILIO_WSP_ADMIN,
+    MODE
+} = process.env
 const port = 8080
-const mongoUrl = 'mongodb+srv://andres:coder@sessionmongoatlas.egjegti.mongodb.net/sessionMongoAtlas?retryWrites=true&w=majority'
 const saltRounds = 10
-const email = 'ranciovichardo@gmail.com'
-const emailPass = 'pigbufzhbkmpftbb'
 const emailTransporter = createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     auth: {
-        user: email,
-        pass: emailPass
+        user: NODEMAILER_EMAIL,
+        pass: NODEMAILER_PASSWORD
     },
-    // Propiedades adicionales para Postman, pasar a true en produccion
+    // test only
     /* secure: false,
     tls: {
         rejectUnauthorized: false
     } */
 })
+
+// setup logger
+const logger = winston.createLogger({
+    level: 'info',
+    transports: [
+        new winston.transports.Console({level: 'info'}),
+        new winston.transports.File({filename: 'error.log', level: 'error'}),
+    ]
+})
+
+// cluster setup
+if (cluster.isPrimary && MODE == 'CLUSTER') {
+    logger.info(`Master ${process.pid} is running`)
+    for (let i = 0; i < availableCpus; i++){
+        cluster.fork()
+    }
+    cluster.on('exit', (worker, code, signal) => {
+        logger.error(`Worker ${worker.process.pid} died`)
+        cluster.fork()
+    })
+} else {
+    // start server
+    app.listen(port, () => {
+        logger.info('Server listening on port ' + port)
+    })
+}
+
+// init twilio
+const twilioClient = twilio(TWILIO_SID, TWILIO_AUTHTOKEN)
 
 // functions
 function passIfLogged(req, res, next) {
@@ -52,16 +96,6 @@ function passIfNotLogged(req, res, next) {
         next()
     }
 }
-
-// setup logger
-const logger = winston.createLogger({
-    level: 'info',
-    transports: [
-        new winston.transports.Console({level: 'info'}),
-        new winston.transports.File({filename: 'warn.log', level: 'warn'}),
-        new winston.transports.File({filename: 'error.log', level: 'error'}),
-    ]
-})
 
 // compress all responses 
 app.use(compression())
@@ -90,14 +124,14 @@ app.set('view engine', 'hbs')
 // configure mongoose
 const mongoOptions = {useNewUrlParser: true, useUnifiedTopology: true}
 mongoose.set('strictQuery', true)
-mongoose.connect(mongoUrl, mongoOptions, e => {
+mongoose.connect(MONGODB_URL, mongoOptions, e => {
     e && logger.error('Hubo un error conectandose a la BDD')
 })
 
 // configure session
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: mongoUrl,
+        mongoUrl: MONGODB_URL,
         mongoOptions: mongoOptions
     }),
     secret: 'clavesecreta',
@@ -172,7 +206,7 @@ passport.use('signup', new LocalStrategy(
                             Su usuario es ${userCreated.username}.`
                             const emailOptions = {
                                 from: 'Server de NodeJS' ,
-                                to: email,
+                                to: NODEMAILER_EMAIL,
                                 subject: 'Se ha creado una cuenta',
                                 html: emailBody,
                             }
@@ -191,11 +225,6 @@ passport.use('signup', new LocalStrategy(
         })           
     }
 ))
-
-// start server
-app.listen(port, () => {
-    logger.info('Server listening on port ' + port)
-})
 
 // routes
 app.get('/', passIfLogged, async (req, res) => {
@@ -336,8 +365,8 @@ app.get('/place-order', passIfLogged, async (req, res) => {
         Ha ingresado un nuevo pedido de ${req.user.name} (${req.user.username}).`
         const emailOptions = {
             from: 'Server de NodeJS' ,
-            to: email,
-            subject: 'Nuevo pedido',
+            to: NODEMAILER_EMAIL,
+            subject: `Tu tienda tiene un nuevo pedido de ${req.user.username}`,
             html: emailBody,
         }
         try {
@@ -346,9 +375,27 @@ app.get('/place-order', passIfLogged, async (req, res) => {
             logger.error(error)
         }
         // Send notification to admin via whatsapp
-        // -pending-
+        try {
+            const message = await twilioClient.messages.create({
+            body: `Tu tienda tiene un nuevo pedido de ${req.user.username}`,
+            from: TWILIO_WSP_SENDER,
+            to: TWILIO_WSP_ADMIN
+            })
+            logger.info(message)
+        } catch (error) {
+            logger.error(error)
+        }
         // Send notification to user via SMS
-        // -pending-
+        try {
+            const message = await twilioClient.messages.create({
+            body: `Hola ${req.user.username}, gracias por tu compra!`,
+            from: TWILIO_NUMBER,
+            to: req.user.phone
+            })
+            logger.info(message)
+        } catch (error) {
+            logger.error(error)
+        }
     } catch (err) {
         logger.error(err)
     }

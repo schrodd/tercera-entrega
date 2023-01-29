@@ -17,3 +17,8 @@
 {"level":"error","originalStack":"Error\n    at model.Query._wrappedThunk [as _updateOne] (C:\\Users\\Andres\\Desktop\\Coderhouse\\tercera-entrega\\node_modules\\mongoose\\lib\\helpers\\query\\wrapThunk.js:27:28)\n    at C:\\Users\\Andres\\Desktop\\Coderhouse\\tercera-entrega\\node_modules\\kareem\\index.js:497:25\n    at processTicksAndRejections (node:internal/process/task_queues:78:11)"}
 {"level":"error","originalStack":"Error\n    at model.Query._wrappedThunk [as _updateOne] (C:\\Users\\Andres\\Desktop\\Coderhouse\\tercera-entrega\\node_modules\\mongoose\\lib\\helpers\\query\\wrapThunk.js:27:28)\n    at C:\\Users\\Andres\\Desktop\\Coderhouse\\tercera-entrega\\node_modules\\kareem\\index.js:497:25\n    at processTicksAndRejections (node:internal/process/task_queues:78:11)"}
 {"code":"EENVELOPE","command":"API","level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"code":21211,"level":"error","moreInfo":"https://www.twilio.com/docs/errors/21211","status":400}
