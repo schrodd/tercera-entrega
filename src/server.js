@@ -13,7 +13,7 @@ import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import bcrypt from 'bcrypt'
 import { users } from './db/index.js'
-import { sendMailUserCreated } from './services/nodemailer/nodemailer.js'
+import sendMail from './services/nodemailer/nodemailer.js'
 
 dotenv.config()
 export const app = express() // init app
@@ -105,7 +105,7 @@ passport.use('signup', new LocalStrategy(
                             logger.error(err)
                             return done(err)
                         } else {
-                            await sendMailUserCreated(userCreated) // send notification to user via email
+                            await sendMail.userCreated(userCreated) // send notification to user via email
                             return done(null, userCreated) // returns new user
                         }
                     })

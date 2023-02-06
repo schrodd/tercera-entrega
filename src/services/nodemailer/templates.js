@@ -9,3 +9,14 @@ export function userCreatedTemplate(userCreated){
   }
   return emailOptions
 }
+
+export function orderPlacedTemplate(userCreated){
+        const emailOptions = {
+            from: 'Server de NodeJS' ,
+            to: NODEMAILER_EMAIL,
+            subject: `Tu tienda tiene un nuevo pedido de ${userCreated.username}`,
+            html: `¡Hola Administrador!
+            Ha ingresado un nuevo pedido de ${userCreated.name} (${userCreated.username}).`
+        }
+  return emailOptions
+}

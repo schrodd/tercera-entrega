@@ -10,10 +10,21 @@ const emailTransporter = createTransport({
   }
 })
 
-export async function sendMailUserCreated(userCreated){
-  try {
-      await emailTransporter.sendMail(userCreatedTemplate(userCreated))
-  } catch (error) {
+const sendMail = {
+  async userCreated(user){
+    try {
+      await emailTransporter.sendMail(userCreatedTemplate(user))
+    } catch (error) {
       logger.error(error)
+    }
+  },
+  async orderPlaced(user){
+    try {
+      await emailTransporter.sendMail(user)
+    } catch (error) {
+      logger.error(error)
+    }
   }
 }
+
+export default sendMail

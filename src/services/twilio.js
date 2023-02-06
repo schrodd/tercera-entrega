@@ -11,9 +11,9 @@ const {
 // init twilio
 const twilioClient = twilio(TWILIO_SID, TWILIO_AUTHTOKEN)
 
-export const twilioSend = {
+const twilioSend = {
   admin: {
-    async orderPlaced(username){
+    async orderPlacedWsp(username){
       const message = await twilioClient.messages.create({
         body: `Tu tienda tiene un nuevo pedido de ${username}`,
         from: TWILIO_WSP_SENDER,
@@ -23,7 +23,7 @@ export const twilioSend = {
     }
   },
   user: {
-    async orderPlaced(username, userPhone){
+    async orderPlacedSms(username, userPhone){
       const message = await twilioClient.messages.create({
         body: `Hola ${username}, gracias por tu compra!`,
         from: TWILIO_NUMBER,
@@ -33,4 +33,4 @@ export const twilioSend = {
   }
 }
 
-// Usage examples: twilioSend.admin.orderPlaced(...), twilioSend.user.orderPlaced(...)
+export default twilioSend

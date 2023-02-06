@@ -16,8 +16,8 @@ class MongoCRUD {
   create = async (element, callback) => {
     return await this.model.save(element, callback)
   }
-  update = async (id, element) => {
-    return await this.model.updateOne(id, element)
+  update = async (id, element, callback) => {
+    return await this.model.updateOne(id, element, callback)
   }
   // delete is not neccesary right now
 }
