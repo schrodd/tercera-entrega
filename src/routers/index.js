@@ -1,10 +1,118 @@
 import { Router } from 'express'
 import { passIfLogged, passIfNotLogged } from '../services/passport.js'
-import { productList } from '../controllers/index.js'
+import ctrl from '../controllers/index.js'
+import passport from 'passport'
 
 const mainRouter = new Router()
+const ppLoginFailedOptions = { failureRedirect: '/login-failed', failureMessage: true }
+const ppRegisterFailedOptions = { failureRedirect: '/register-failed', failureMessage: true }
 
-mainRouter.get('/productos', passIfLogged, productList)
+mainRouter.get('/', passIfLogged, ctrl.productList)
+mainRouter.get('/login', passIfNotLogged, (req, res) => {
+  res.render('login')
+})
+mainRouter.post('/login', passport.authenticate('login', ppLoginFailedOptions), (req, res) => {
+  res.redirect('/')
+})
+mainRouter.get('/login-failed', (req, res) => {
+  res.render('login-failed', { message: req.session.messages.at(-1) })
+})
+mainRouter.get('/logout', passIfLogged, ctrl.logout)
+mainRouter.get('/register', passIfNotLogged, (req, res) => { res.render('register') })
+mainRouter.post('/register', passport.authenticate('signup', ppRegisterFailedOptions), (req, res) => {
+  res.redirect('/')
+})
+mainRouter.get('/register-failed', (req, res) => {
+  res.render('register-failed', {message: req.session.messages.at(-1)})
+})
+mainRouter.get('/cart', passIfLogged, ctrl.cart)
+
+mainRouter.get('/add-to-cart/:id', passIfLogged, ctrl.addToCart)
+
+mainRouter.get('/added-to-cart', passIfLogged, (req, res) => {
+  const data = {
+      username: req.user.name,
+      photo: req.user.photo,
+      cartLength: req.user.cart.length
+  }
+  res.render('added-to-cart', data)
+})
+
+mainRouter.get('/remove-from-cart/:id', passIfLogged, (req, res) => {
+  const idx = req.user.cart.findIndex(e => e.id == req.params.id)
+  idx != -1 && req.user.cart.splice(idx, 1)
+  try {
+      User.updateOne({_id: req.user.id}, {cart: req.user.cart}, e => e && logger.error(e))
+  } catch (e) {
+      logger.error(e)
+  }
+  res.redirect('/removed-from-cart')
+})
+
+mainRouter.get('/removed-from-cart', passIfLogged, (req, res) => {
+  const data = {
+      username: req.user.name,
+      photo: req.user.photo,
+      cartLength: req.user.cart.length
+  }
+  res.render('removed-from-cart', data)
+})
+
+mainRouter.get('/place-order', passIfLogged, async (req, res) => {
+  try {
+      // Add record on DB 'Orders' collection
+      const doc = new Order({userid: req.user.id, products: req.user.cart})
+      await doc.save()
+      // Clear cart
+      User.updateOne({_id: req.user.id}, {cart: []}, e => e && logger.error(e))
+      // Send notification to admin via mail
+      const emailBody = `¡Hola Administrador!
+      Ha ingresado un nuevo pedido de ${req.user.name} (${req.user.username}).`
+      const emailOptions = {
+          from: 'Server de NodeJS' ,
+          to: NODEMAILER_EMAIL,
+          subject: `Tu tienda tiene un nuevo pedido de ${req.user.username}`,
+          html: emailBody,
+      }
+      try {
+          await emailTransporter.sendMail(emailOptions)
+      } catch (error) {
+          logger.error(error)
+      }
+      // Send notification to admin via whatsapp
+      try {
+          const message = await twilioClient.messages.create({
+          body: `Tu tienda tiene un nuevo pedido de ${req.user.username}`,
+          from: TWILIO_WSP_SENDER,
+          to: TWILIO_WSP_ADMIN
+          })
+          logger.info(message)
+      } catch (error) {
+          logger.error(error)
+      }
+      // Send notification to user via SMS
+      try {
+          const message = await twilioClient.messages.create({
+          body: `Hola ${req.user.username}, gracias por tu compra!`,
+          from: TWILIO_NUMBER,
+          to: req.user.phone
+          })
+          logger.info(message)
+      } catch (error) {
+          logger.error(error)
+      }
+  } catch (err) {
+      logger.error(err)
+  }
+  // Redirect to template informing what happened
+  const data = {
+      username: req.user.name,
+      photo: req.user.photo,
+      cartLength: 0
+  }
+  res.render('order-placed', data)
+})
+
 
 export default mainRouter
 

@@ -92,27 +92,27 @@ passport.use('login', new LocalStrategy(
 ))
 
 passport.use('signup', new LocalStrategy(
-{passReqToCallback: true}, // allows access to request from callback
-(req, username, password, done) => { 
-    users.findOne({ username }, (err, user) => { 
-    if (err) return done(err) 
-    if (user) return done(null, false) // if exists, returns it 
-    if (!user) { // if it doesnt, creates it
-        bcrypt.hash(password, saltRounds, function(err, hash) {
-            err && logger.error(err)
-            users.create(userFormatter(username, hash, req.body), async (err, userCreated) => {
-                if (err) {
-                    logger.error(err)
-                    return done(err)
-                } else {
-                    await sendMailUserCreated(userCreated) // send notification to user via email
-                    return done(null, userCreated) // returns new user
-                }
-            })
-        })
+    {passReqToCallback: true}, // allows access to request from callback
+    (req, username, password, done) => { 
+        users.findOne({ username }, (err, user) => { 
+            if (err) return done(err) 
+            if (user) return done(null, false)
+            if (!user) { // if it doesnt exist, creates it
+                bcrypt.hash(password, saltRounds, function(err, hash) {
+                    err && logger.error(err)
+                    users.create(userFormatter(username, hash, req.body), async (err, userCreated) => {
+                        if (err) {
+                            logger.error(err)
+                            return done(err)
+                        } else {
+                            await sendMailUserCreated(userCreated) // send notification to user via email
+                            return done(null, userCreated) // returns new user
+                        }
+                    })
+                })
+            }
+        })           
     }
-    })           
-}
 ))
 
 // configure handlebars
