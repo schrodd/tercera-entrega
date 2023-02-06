@@ -16,15 +16,18 @@ function prodInCartFormatter(cart, products){
   return arr
 }
 
-function templateDataFormatter(req, additionalData) {
-  return { username: req.user.name, photo: req.user.photo, cartLength: req.user.cart.length, additionalData }
+function templateDataFormatter(req, additionalData, cartLength) {
+  return ({ username: req.user.name, photo: req.user.photo, cartLength: req.user.cart.length, additionalData })
 }
 
 // end helper functions //
 
 async function productList(req, res) {
   const allProducts = await products.find()
-  res.render('products', templateDataFormatter(req, allProducts))
+  const data = {
+    username: req.user.name, photo: req.user.photo, cartLength: req.user.cart.length, allProducts
+  }
+  res.render('products', data)
 }
 
 function logout(req, res) {

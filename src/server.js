@@ -12,7 +12,7 @@ import { logger } from './services/logger.js'
 import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import bcrypt from 'bcrypt'
-import { users } from './db/index.js'
+import UserModel from './db/models/users.js'
 import sendMail from './services/nodemailer/nodemailer.js'
 
 dotenv.config()
@@ -58,16 +58,12 @@ app.use(passport.session()) // passport - session
 
 const saltRounds = 10 // bcrypt rounds 
 
-// check login (middlewares)
-export const passIfLogged = () => req.isAuthenticated() ? next() : res.redirect('/login')
-export const passIfNotLogged = () => req.isAuthenticated() ? res.redirect('/') : next()
-
 // create req.user (serialization)
 passport.serializeUser((user, done) => {
     done(null, user._id);
 });
 passport.deserializeUser((id, done) => {
-  users.find({_id: id}, done);
+    UserModel.findById(id, done);
 })
 
 // user formatter
@@ -78,7 +74,7 @@ function userFormatter(username, password, body) {
 // config LocalStrategy
 passport.use('login', new LocalStrategy(
     (username, password, done) => {
-        users.findOne({ username }, async (err, user) => {
+        UserModel.findOne({ username }, async (err, user) => {
             if (err) return done(err)
             else if (!user) {
                 logger.error('User not found with username ' + username)
@@ -87,20 +83,20 @@ passport.use('login', new LocalStrategy(
                 logger.error('Invalid Password')
                 return done(null, false, {message: 'Contraseña incorrecta'})
             } else return done(null, user)
-        })    
+        })
     }
 ))
 
 passport.use('signup', new LocalStrategy(
     {passReqToCallback: true}, // allows access to request from callback
     (req, username, password, done) => { 
-        users.findOne({ username }, (err, user) => { 
+        UserModel.findOne({ username }, (err, user) => { 
             if (err) return done(err) 
             if (user) return done(null, false)
             if (!user) { // if it doesnt exist, creates it
                 bcrypt.hash(password, saltRounds, function(err, hash) {
                     err && logger.error(err)
-                    users.create(userFormatter(username, hash, req.body), async (err, userCreated) => {
+                    UserModel.create(userFormatter(username, hash, req.body), async (err, userCreated) => {
                         if (err) {
                             logger.error(err)
                             return done(err)
