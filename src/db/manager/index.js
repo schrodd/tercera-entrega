@@ -13,8 +13,9 @@ class MongoCRUD {
   findOne = (filters, callback) => {
     return this.model.findOne(filters, callback)
   }
-  create = (element, callback) => {
-    return this.model.save(element, callback)
+  create = async (element) => {
+    const doc = new this.model(element)
+    return await doc.save()
   }
   update = (id, element, callback) => {
     return this.model.updateOne(id, element, callback)

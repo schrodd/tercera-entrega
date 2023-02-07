@@ -1,12 +1,11 @@
 import twilio from 'twilio'
-
-const {
+import {
   TWILIO_SID, 
   TWILIO_AUTHTOKEN,
   TWILIO_NUMBER,
   TWILIO_WSP_SENDER,
   TWILIO_WSP_ADMIN,
-} = process.env
+} from './env.js'
 
 // init twilio
 const twilioClient = twilio(TWILIO_SID, TWILIO_AUTHTOKEN)
@@ -29,6 +28,7 @@ const twilioSend = {
         from: TWILIO_NUMBER,
         to: userPhone
       })
+      return message
     }
   }
 }

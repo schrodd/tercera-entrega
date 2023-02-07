@@ -2,32 +2,11 @@ import { products, users, orders } from '../db/index.js'
 import sendMail from '../services/nodemailer/nodemailer.js'
 import twilioSend from '../services/twilio.js'
 import { logger } from '../services/logger.js'
-
-// helper functions (mostly formatters) //
-
-function prodIdsFormatter(cart) {
-  return cart.map(e => ({_id: e.id}))
-}
-function prodInCartFormatter(cart, products){
-  const arr = []
-  cart.forEach(e => {
-    const prod = products.find(f => e.id == f._id)
-    arr.push({qty: e.qty, ...prod})
-  })
-  return arr
-}
-
-function templateDataFormatter(req, additionalData, cartLength) {
-  return ({ username: req.user.name, photo: req.user.photo, cartLength: req.user.cart.length, additionalData })
-}
-
-// end helper functions //
+import { prodIdsFormatter, prodInCartFormatter, templateDataFormatter } from './formatters.js'
 
 async function productList(req, res) {
   const allProducts = await products.find()
-  const data = {
-    username: req.user.name, photo: req.user.photo, cartLength: req.user.cart.length, allProducts
-  }
+  const data = { username: req.user.name, photo: req.user.photo, cartLength: req.user.cart.length, allProducts }
   res.render('products', data)
 }
 
@@ -41,9 +20,7 @@ async function cart(req, res) {
   let productData = null
   if (req.user.cart.length > 0) productData = await products.find({$or:prodIdsFormatter(req.user.cart)})
   const prodsInCart = prodInCartFormatter(req.user.cart, productData)
-  const data = {
-    username: req.user.name, photo: req.user.photo, cartLength: req.user.cart.length, prodsInCart
-  }
+  const data = { username: req.user.name, photo: req.user.photo, cartLength: req.user.cart.length, prodsInCart }
   prodsInCart.length == 0
   ? res.render('empty-cart', templateDataFormatter(req, prodsInCart))
   : res.render('cart', data)
@@ -74,14 +51,13 @@ function removedFromCart(req, res) {
 
 async function placeOrder(req, res) {
   try {
-    const doc = new orders({userid: req.user.id, products: req.user.cart})
-    await doc.save()
+    await orders.create({userid: req.user.id, products: req.user.cart})
     users.update({_id: req.user.id}, {cart: []}, e => e && logger.error(e)) // clear cart
     await sendMail.orderPlaced(req.user) // mail to admin
     await twilioSend.admin.orderPlacedWsp(req.user.username) // wsp to admin
     await twilioSend.user.orderPlacedSms(req.user.username, req.user.phone) // sms to user
   } catch (err) {
-    logger.error(err)
+    console.log(err)
   }
   res.render('order-placed', templateDataFormatter(req))
 }

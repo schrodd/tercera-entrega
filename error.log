@@ -24,3 +24,11 @@
 {"code":21211,"level":"error","moreInfo":"https://www.twilio.com/docs/errors/21211","status":400}
 {"level":"error","message":"Invalid Password"}
 {"level":"error","message":"Invalid Password"}
+{"level":"error"}
+{"level":"error"}
+{"code":"EENVELOPE","command":"API","level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error","message":"User not found with username asdas"}

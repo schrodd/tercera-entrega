@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser'
 import handlebars from 'express-handlebars'
 import MongoStore from 'connect-mongo'
 import session from 'express-session'
-import dotenv from 'dotenv'
 import cluster from 'cluster'
 import os from 'os'
 import mainRouter from './routers/index.js'
@@ -13,13 +12,12 @@ import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import bcrypt from 'bcrypt'
 import UserModel from './db/models/users.js'
+import { users } from './db/index.js'
 import sendMail from './services/nodemailer/nodemailer.js'
+import { MODE, PORT, MONGODB_URL } from './services/env.js'
 
-dotenv.config()
-export const app = express() // init app
-
-// constants
-const { MODE, PORT } = process.env
+// init app
+export const app = express() 
 
 // cluster setup
 if (cluster.isPrimary && MODE == 'CLUSTER') {
@@ -42,7 +40,7 @@ app.use(express.static('./public')) // serve static files
 // configure session
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URL,
+        mongoUrl: MONGODB_URL,
         mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true}
     }),
     secret: 'clavesecreta',
@@ -55,26 +53,26 @@ app.use(session({
 // configure passport
 app.use(passport.initialize()) // passport - express
 app.use(passport.session()) // passport - session
-
 const saltRounds = 10 // bcrypt rounds 
 
 // create req.user (serialization)
 passport.serializeUser((user, done) => {
-    done(null, user._id);
-});
+    done(null, user._id)
+})
 passport.deserializeUser((id, done) => {
-    UserModel.findById(id, done);
+    UserModel.findById(id, done)
 })
 
 // user formatter
 function userFormatter(username, password, body) {
-    return { username, password, name: body.name, email: body.email, address: body.address,
-    age: body.age, phone: body.phone, photo: body.photo, cart: [] }}
-  
+    return ({ username, password, name: body.name, email: body.email, address: body.address,
+    age: body.age, phone: body.phone, photo: body.photo, cart: [] })
+}
+
 // config LocalStrategy
 passport.use('login', new LocalStrategy(
     (username, password, done) => {
-        UserModel.findOne({ username }, async (err, user) => {
+        users.findOne({ username }, async (err, user) => {
             if (err) return done(err)
             else if (!user) {
                 logger.error('User not found with username ' + username)
@@ -90,7 +88,7 @@ passport.use('login', new LocalStrategy(
 passport.use('signup', new LocalStrategy(
     {passReqToCallback: true}, // allows access to request from callback
     (req, username, password, done) => { 
-        UserModel.findOne({ username }, (err, user) => { 
+        users.findOne({ username }, (err, user) => { 
             if (err) return done(err) 
             if (user) return done(null, false)
             if (!user) { // if it doesnt exist, creates it
