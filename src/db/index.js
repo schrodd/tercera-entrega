@@ -1,7 +1,7 @@
 import OrderModel from './models/orders.js'
 import ProductModel from './models/products.js'
 import UserModel from './models/users.js'
-import MongoModel from './crud/index.js'
+import MongoModel from './manager/index.js'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 
