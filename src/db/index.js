@@ -3,8 +3,8 @@ import ProductModel from './models/products.js'
 import UserModel from './models/users.js'
 import MongoModel from './manager/index.js'
 import mongoose from 'mongoose'
-import { logger } from '../services/logger.js'
-import { MONGODB_URL } from '../services/env.js'
+import { logger } from '../lib/logger.js'
+import { MONGODB_URL } from '../lib/env.js'
 
 export const orders = new MongoModel(OrderModel)
 export const products = new MongoModel(ProductModel)
