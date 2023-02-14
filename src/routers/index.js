@@ -21,6 +21,6 @@ mainRouter.get('/added-to-cart', passIfLogged, controllers.addedToCart)
 mainRouter.get('/remove-from-cart/:id', passIfLogged, controllers.removeFromCart)
 mainRouter.get('/removed-from-cart', passIfLogged, controllers.removedFromCart)
 mainRouter.get('/place-order', passIfLogged, controllers.placeOrder)
-mainRouter.get('/get-users', controllers.getUserList)
+mainRouter.get('/users', controllers.getUserList)
 
 export default mainRouter
