@@ -7,7 +7,7 @@ class UserDto {
   }
 }
 
-export function userToDto(users) {
+export function userToDto(users) { 
   let data
   if (Array.isArray(users)) {
     data = users.map(u => new UserDto(u))
