@@ -5,6 +5,7 @@ import sendMail from '../lib/nodemailer/nodemailer.js'
 import twilioSend from '../lib/twilio.js'
 import { DATABASE } from '../config/config.js'
 import { createFactory } from '../db/index.js'
+import { userToDto } from '../db/dto/userDto.js'
 
 const {userDaoContainer, productDaoContainer, orderDaoContainer} = await createFactory(DATABASE)
 
@@ -67,4 +68,14 @@ export async function processOrder(req){
   } catch (err) {
     console.log(err)
   }
+}
+
+export async function getUsers(){
+  let data
+  try {
+    data = userToDto(await userDaoContainer.find())
+  } catch (error) {
+    logger.error(error)
+  }
+  return data
 }

@@ -1,5 +1,5 @@
 import { templateDataFormatter } from './formatters.js'
-import { getProductList, endSession, getCartItems, addItemToCart, removeItemFromCart, processOrder } from '../service/index.js'
+import { getProductList, endSession, getCartItems, addItemToCart, removeItemFromCart, processOrder, getUsers } from '../service/index.js'
 
 async function productList(req, res) {
   res.render('products', await getProductList(req))
@@ -59,8 +59,12 @@ function registerFailed(req, res) {
   res.render('register-failed', {message: req.session.messages.at(-1)})
 }
 
+async function getUserList(req, res) {
+  res.json(await getUsers())
+}
+
 const controllers = {
-  productList, logout, cart, addToCart, addedToCart, removeFromCart, removedFromCart, placeOrder, renderLogin, renderRegister, redirectRoot, loginFailed, registerFailed
+  productList, logout, cart, addToCart, addedToCart, removeFromCart, removedFromCart, placeOrder, renderLogin, renderRegister, redirectRoot, loginFailed, registerFailed, getUserList
 }
 
 export default controllers
