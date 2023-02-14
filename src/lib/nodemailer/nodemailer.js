@@ -1,7 +1,7 @@
 import { createTransport } from 'nodemailer'
 import { userCreatedTemplate, orderPlacedTemplate } from './templates.js'
 import { logger } from '../logger.js'
-import { NODEMAILER_EMAIL, NODEMAILER_PASSWORD } from '../env.js'
+import { NODEMAILER_EMAIL, NODEMAILER_PASSWORD } from '../../config/config.js'
 
 const emailTransporter = createTransport({
   host: 'smtp.gmail.com',

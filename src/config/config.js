@@ -11,5 +11,6 @@ export const {
   TWILIO_WSP_SENDER,
   TWILIO_WSP_ADMIN,
   MODE,
-  PORT
+  PORT,
+  DATABASE
 } = process.env

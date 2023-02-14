@@ -1,16 +1,15 @@
 import { Strategy as LocalStrategy } from 'passport-local'
 import bcrypt from 'bcrypt'
-import UserModel from '../db/models/users.js'
-import { users } from '../db/index.js'
 import sendMail from '../lib/nodemailer/nodemailer.js'
 import { userFormatter } from '../controllers/formatters.js'
+import UserModel from '../db/models/userModel.js'
 
 const saltRounds = 10 // bcrypt rounds 
 
 export const signupStrat = new LocalStrategy(
   {passReqToCallback: true}, // allows access to request from callback
   (req, username, password, done) => { 
-      users.findOne({ username }, (err, user) => { 
+    UserModel.findOne({ username }, (err, user) => { 
           if (err) return done(err) 
           if (user) return done(null, false)
           if (!user) { // if it doesnt exist, creates it
@@ -33,7 +32,7 @@ export const signupStrat = new LocalStrategy(
 
 export const loginStrat = new LocalStrategy(
   (username, password, done) => {
-      users.findOne({ username }, async (err, user) => {
+    UserModel.findOne({ username }, async (err, user) => {
           if (err) return done(err)
           else if (!user) {
               logger.error('User not found with username ' + username)

@@ -1,4 +1,4 @@
-import { NODEMAILER_EMAIL } from '../env.js'
+import { NODEMAILER_EMAIL } from '../../config/config.js'
 
 export function userCreatedTemplate(userCreated){
   const emailOptions = {

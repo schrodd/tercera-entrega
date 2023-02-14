@@ -5,7 +5,7 @@ import {
   TWILIO_NUMBER,
   TWILIO_WSP_SENDER,
   TWILIO_WSP_ADMIN,
-} from './env.js'
+} from '../config/config.js'
 
 // init twilio
 const twilioClient = twilio(TWILIO_SID, TWILIO_AUTHTOKEN)

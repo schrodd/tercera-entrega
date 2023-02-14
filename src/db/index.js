@@ -1,18 +1,28 @@
-import OrderModel from './models/orders.js'
-import ProductModel from './models/products.js'
-import UserModel from './models/users.js'
-import MongoModel from './manager/index.js'
-import mongoose from 'mongoose'
-import { logger } from '../lib/logger.js'
-import { MONGODB_URL } from '../lib/env.js'
+// factory  
+import UserModel from './models/userModel.js'
+import ProductModel from './models/productModel.js'
+import OrderModel from './models/orderModel.js'
+import ClientMongo from './clients/clientMongo.js'
 
-export const orders = new MongoModel(OrderModel)
-export const products = new MongoModel(ProductModel)
-export const users = new MongoModel(UserModel)
-
-mongoose.set('strictQuery', true)
-mongoose.connect(
-    MONGODB_URL,
-    {useNewUrlParser: true, useUnifiedTopology: true},
-    (e) => e && logger.error('Hubo un error conectandose a la BDD')
-)
+export async function createFactory(DATABASE){
+  let userDaoContainer
+  let productDaoContainer
+  let orderDaoContainer
+  switch (DATABASE) {
+    case 'MONGODB':
+      console.log('before')
+      const {UserDao} = await import('./dao/userDao.js')
+      const {ProductDao} = await import('./dao/productDao.js')
+      const {OrderDao} = await import('./dao/orderDao.js')
+      console.log('after')
+      const client = new ClientMongo()
+      await client.connect()
+      userDaoContainer = new UserDao(UserModel)
+      productDaoContainer = new ProductDao(ProductModel)
+      orderDaoContainer = new OrderDao(OrderModel)
+      break
+    default:
+      break
+  }
+  return {userDaoContainer, productDaoContainer, orderDaoContainer}
+}

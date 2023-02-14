@@ -3,7 +3,7 @@ function processMongoQuery(response) {
   return JSON.parse(resUnparsed)
 }
 
-class MongoCRUD {
+class MongoManager {
   constructor (model) {
     this.model = model
   }
@@ -23,4 +23,4 @@ class MongoCRUD {
   // delete is not neccesary right now
 }
 
-export default MongoCRUD
+export default MongoManager
