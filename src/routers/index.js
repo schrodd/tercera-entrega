@@ -2,11 +2,15 @@ import { Router } from 'express'
 import controllers from '../controllers/index.js'
 import passport from 'passport'
 import { passIfLogged, passIfNotLogged } from './middlewares.js'
+import apiRouter from './api/api.js'
 
 const mainRouter = new Router()
 const ppLoginFailedOptions = { failureRedirect: '/login-failed', failureMessage: true }
 const ppRegisterFailedOptions = { failureRedirect: '/register-failed', failureMessage: true }
 
+mainRouter.use('/api', apiRouter)
+
+// Routes (views with Handlebars)
 mainRouter.get('/', passIfLogged, controllers.productList)
 mainRouter.get('/login', passIfNotLogged, controllers.renderLogin )
 mainRouter.post('/login', passport.authenticate('login', ppLoginFailedOptions), controllers.redirectRoot )
@@ -21,6 +25,5 @@ mainRouter.get('/added-to-cart', passIfLogged, controllers.addedToCart)
 mainRouter.get('/remove-from-cart/:id', passIfLogged, controllers.removeFromCart)
 mainRouter.get('/removed-from-cart', passIfLogged, controllers.removedFromCart)
 mainRouter.get('/place-order', passIfLogged, controllers.placeOrder)
-mainRouter.get('/users', controllers.getUserList)
 
 export default mainRouter

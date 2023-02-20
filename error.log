@@ -33,3 +33,7 @@
 {"level":"error"}
 {"level":"error","message":"User not found with username asdas"}
 {"level":"error"}
+{"level":"error"}
+{"level":"error","message":"Hubo un error conectandose a la BDD"}
+{"kind":"ObjectId","message":"Cast to ObjectId failed for value \"undefined\" (type string) at path \"_id\" for model \"products\"","name":"CastError","path":"_id","reason":{},"stringValue":"\"undefined\"","value":"undefined","valueType":"string"}
+{"kind":"ObjectId","message":"Cast to ObjectId failed for value \"undefined\" (type string) at path \"_id\" for model \"products\"","name":"CastError","path":"_id","reason":{},"stringValue":"\"undefined\"","value":"undefined","valueType":"string"}

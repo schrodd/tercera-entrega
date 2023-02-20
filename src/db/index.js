@@ -10,11 +10,9 @@ export async function createFactory(DATABASE){
   let orderDaoContainer
   switch (DATABASE) {
     case 'MONGODB':
-      console.log('before')
       const {UserDao} = await import('./dao/userDao.js')
       const {ProductDao} = await import('./dao/productDao.js')
       const {OrderDao} = await import('./dao/orderDao.js')
-      console.log('after')
       const client = new ClientMongo()
       await client.connect()
       userDaoContainer = new UserDao(UserModel)

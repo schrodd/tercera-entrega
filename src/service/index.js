@@ -5,13 +5,18 @@ import sendMail from '../lib/nodemailer/nodemailer.js'
 import twilioSend from '../lib/twilio.js'
 import { DATABASE } from '../config/config.js'
 import { createFactory } from '../db/index.js'
-import { userToDto } from '../db/dto/userDto.js'
 
 const {userDaoContainer, productDaoContainer, orderDaoContainer} = await createFactory(DATABASE)
 
 export async function getProductList(req){
   const allProducts = await productDaoContainer.find()
-  return ({ username: req.user.name, photo: req.user.photo, cartLength: req.user.cart.length, allProducts })
+  const res = { 
+    username: req.user ? req.user.name : '',
+    photo: req.user ? req.user.photo : '',
+    cartLength: req.user ? req.user.cart.length : '',
+    allProducts 
+  }
+  return res
 }
 
 export function endSession(req){
@@ -70,12 +75,71 @@ export async function processOrder(req){
   }
 }
 
-export async function getUsers(){
+export async function getUserListApi(){
   let data
   try {
-    data = userToDto(await userDaoContainer.find())
+    // data = userToDto(await userDaoContainer.find())
+    data = await userDaoContainer.find()
   } catch (error) {
     logger.error(error)
   }
   return data
+}
+
+export async function getOrderListApi(){
+  let data
+  try {
+    data = await orderDaoContainer.find()
+  } catch (error) {
+    logger.error(error)
+  }
+  return data
+}
+
+export async function getProductListApi(req){
+  let data
+  try {
+    data = req.params.id ? await productDaoContainer.find({_id: req.params.id}) : await productDaoContainer.find()
+  } catch (error) {
+    logger.error(error)
+  }
+  return data
+}
+
+export async function postProductApi(req){
+  const {error, value} = productDaoContainer.validate(req.body)
+  let product
+  if (!error){
+    try {
+      product = await productDaoContainer.create(value)
+    } catch (error) {
+      logger.error(error)
+    }
+  } else {
+    return {error}
+  }
+  return {status: 'product posted successfully', product}
+}
+
+export async function updateProductApi(req){
+  const {error, value} = productDaoContainer.validate(req.body)
+  if (!error){
+    try {
+      const result = await productDaoContainer.updateNoCb(req.params.id , value)
+      return result.matchedCount ? {status: 'product updated successfully'} : {status: 'id not found'}
+    } catch (error) {
+      console.log(error)
+    }
+  } else {
+    return {error, status: 'schema check failed'}
+  }
+}
+
+export async function deleteProductApi(req){
+  try {
+    const result = await productDaoContainer.delete(req.params.id)
+    return result.deletedCount ? {status: 'product deleted successfully'} : {status: 'id not found'}
+  } catch (error) {
+    console.log(error)
+  }
 }

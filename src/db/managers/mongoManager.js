@@ -20,7 +20,12 @@ class MongoManager {
   update = (id, element, callback) => {
     return this.model.updateOne(id, element, callback)
   }
-  // delete is not neccesary right now
+  updateNoCb = async (id, element) => {
+    return await this.model.updateOne({_id: id}, element)
+  }
+  delete = async (id) => {
+    return await this.model.deleteOne({_id: id})
+  }
 }
 
 export default MongoManager
